@@ -41,6 +41,13 @@ flags.mark_bool_flags_as_mutual_exclusive(
 )
 
 
+def _field(obj, key, default=None):
+    """Safely extract a field from either a dict-like or object."""
+    if isinstance(obj, dict):
+        return obj.get(key, default)
+    return getattr(obj, key, default)
+
+
 def create() -> None:
     """Creates a new deployment."""
     # First wrap the agent in AdkApp
@@ -83,10 +90,10 @@ def create_session(resource_id: str, user_id: str) -> None:
     remote_app = agent_engines.get(resource_id)
     remote_session = remote_app.create_session(user_id=user_id)
     print("Created session:")
-    print(f"  Session ID: {remote_session['id']}")
-    print(f"  User ID: {remote_session['user_id']}")
-    print(f"  App name: {remote_session['app_name']}")
-    print(f"  Last update time: {remote_session['last_update_time']}")
+    print(f"  Session ID: {_field(remote_session, 'id')}")
+    print(f"  User ID: {_field(remote_session, 'user_id', user_id)}")
+    print(f"  App name: {_field(remote_session, 'app_name')}")
+    print(f"  Last update time: {_field(remote_session, 'last_update_time')}")
     print("\nUse this session ID with --session_id when sending messages.")
 
 
@@ -96,7 +103,7 @@ def list_sessions(resource_id: str, user_id: str) -> None:
     sessions = remote_app.list_sessions(user_id=user_id)
     print(f"Sessions for user '{user_id}':")
     for session in sessions:
-        print(f"- Session ID: {session['id']}")
+        print(f"- Session ID: {_field(session, 'id')}")
 
 
 def get_session(resource_id: str, user_id: str, session_id: str) -> None:
@@ -104,10 +111,10 @@ def get_session(resource_id: str, user_id: str, session_id: str) -> None:
     remote_app = agent_engines.get(resource_id)
     session = remote_app.get_session(user_id=user_id, session_id=session_id)
     print("Session details:")
-    print(f"  ID: {session['id']}")
-    print(f"  User ID: {session['user_id']}")
-    print(f"  App name: {session['app_name']}")
-    print(f"  Last update time: {session['last_update_time']}")
+    print(f"  ID: {_field(session, 'id')}")
+    print(f"  User ID: {_field(session, 'user_id', user_id)}")
+    print(f"  App name: {_field(session, 'app_name')}")
+    print(f"  Last update time: {_field(session, 'last_update_time')}")
 
 
 def send_message(resource_id: str, user_id: str, session_id: str, message: str) -> None:
@@ -117,12 +124,22 @@ def send_message(resource_id: str, user_id: str, session_id: str, message: str) 
     print(f"Sending message to session {session_id}:")
     print(f"Message: {message}")
     print("\nResponse:")
-    for event in remote_app.stream_query(
-        user_id=user_id,
-        session_id=session_id,
-        message=message,
-    ):
-        print(event)
+    got_event = False
+    try:
+        for event in remote_app.stream_query(
+            user_id=user_id,
+            session_id=session_id,
+            message=message,
+        ):
+            got_event = True
+            print(event)
+    except Exception as exc:  # pragma: no cover - CLI diagnostics
+        print(f"Error while streaming response: {exc}")
+        return
+    if not got_event:
+        print(
+            "No streaming events were returned. Check the agent logs in Cloud Console for errors."
+        )
 
 
 def main(argv=None):
