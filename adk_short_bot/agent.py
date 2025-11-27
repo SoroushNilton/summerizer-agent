@@ -6,7 +6,7 @@ from adk_short_bot.tools import count_characters
 root_agent = Agent(
     name="adk_short_bot",
     model="gemini-2.0-flash",
-    description="A bot that shortens messages while maintaining their core meaning",
+    description="An agent that summerize messages while maintaining their core meaning",
     instruction=ROOT_AGENT_INSTRUCTION,
     # The current ADK runtime expects `static_instruction`; set it explicitly to avoid
     # missing attribute errors in the remote Agent Engine environment.

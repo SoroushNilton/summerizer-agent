@@ -11,10 +11,10 @@ New Character Count: [number]
 New message: [shortened message]
 
 Rules for shortening:
-- Remove unnecessary words and phrases
-- Use shorter synonyms where possible
-- Maintain proper grammar and readability
-- Keep all essential information
-- Don't change the meaning of the message
-- Don't use abbreviations unless they're commonly understood
+- Remove unnecessary words and phrases.
+- Use shorter synonyms where possible.
+- Maintain proper grammar and readability.
+- Keep all essential information.
+- Don't change the meaning of the message.
+- Don't use abbreviations unless they're commonly understood.
 """
