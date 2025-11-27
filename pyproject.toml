@@ -1,10 +1,8 @@
 [project]
-name = "adk-short-bot"
+name = "summerizer-agent"
 version = "0.1.0"
-description = "A bot that shortens your messages"
-authors = [
-    {name = "Brandon Hancock", email = "brandon@brandonhancock.io"}
-]
+description = "An AI Agent that shortens your messages. Modified by Soroush Razavi based on work by Brandon Hancock under Apache License 2.0."
+
 readme = "README.md"
 requires-python = ">=3.12"
 license = "Apache License 2.0"
@@ -20,7 +18,7 @@ absl-py = "^2.1.0"
 cloudpickle = "^3.0.0"
 
 [tool.poetry.scripts]
-adk-short-bot = "adk_short_bot:app"
+summerizer-agent = "summerizer_agent:app"
 deploy-local = "deployment.local:main"
 deploy-remote = "deployment.remote:main"
 cleanup = "deployment.cleanup:cleanup_deployment"

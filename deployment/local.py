@@ -6,7 +6,7 @@ from absl import app, flags
 from dotenv import load_dotenv
 from vertexai.preview import reasoning_engines
 
-from adk_short_bot.agent import root_agent
+from summerizer_agent.agent import root_agent
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("project_id", None, "GCP project ID.")
@@ -103,10 +103,28 @@ def _send_message(app_instance):
     print(f"Sending message to session {session_id}:")
     print(f"Message: {message}")
     print("\nResponse:")
+    text_events = []
     for event in app_instance.stream_query(
         user_id=user_id, session_id=session_id, message=message
     ):
         print(event)
+        content = getattr(event, "content", None)
+        if content and hasattr(content, "parts"):
+            for part in content.parts:
+                text = getattr(part, "text", None)
+                if text:
+                    text_events.append(text)
+    combined = "\n".join(text_events)
+    required = [
+        "Original Character Count:",
+        "New Character Count:",
+        "New message:",
+    ]
+    if combined and not all(key in combined for key in required):
+        print(
+            "\nWarning: Response did not include the required three-line format. "
+            "Re-try the request; the agent prompt now enforces the format."
+        )
 
 
 def main(argv=None):

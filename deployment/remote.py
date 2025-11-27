@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from vertexai import agent_engines
 from vertexai.preview import reasoning_engines
 
-from adk_short_bot.agent import root_agent
+from summerizer_agent.agent import root_agent
 
 FLAGS = flags.FLAGS
 flags.DEFINE_string("project_id", None, "GCP project ID.")
@@ -62,7 +62,7 @@ def create() -> None:
         requirements=[
             "google-cloud-aiplatform[adk,agent_engines]",
         ],
-        extra_packages=["./adk_short_bot"],
+        extra_packages=["./summerizer_agent"],
     )
     print(f"Created remote app: {remote_app.resource_name}")
 
@@ -124,6 +124,7 @@ def send_message(resource_id: str, user_id: str, session_id: str, message: str) 
     print(f"Sending message to session {session_id}:")
     print(f"Message: {message}")
     print("\nResponse:")
+    text_events = []
     got_event = False
     try:
         for event in remote_app.stream_query(
@@ -133,6 +134,12 @@ def send_message(resource_id: str, user_id: str, session_id: str, message: str) 
         ):
             got_event = True
             print(event)
+            content = _field(event, "content")
+            if content and hasattr(content, "parts"):
+                for part in content.parts:
+                    text = _field(part, "text")
+                    if text:
+                        text_events.append(text)
     except Exception as exc:  # pragma: no cover - CLI diagnostics
         print(f"Error while streaming response: {exc}")
         return
@@ -140,6 +147,18 @@ def send_message(resource_id: str, user_id: str, session_id: str, message: str) 
         print(
             "No streaming events were returned. Check the agent logs in Cloud Console for errors."
         )
+    else:
+        combined = "\n".join(text_events)
+        required = [
+            "Original Character Count:",
+            "New Character Count:",
+            "New message:",
+        ]
+        if combined and not all(key in combined for key in required):
+            print(
+                "\nWarning: Response did not include the required three-line format. "
+                "Re-try the request; the agent prompt now enforces the format."
+            )
 
 
 def main(argv=None):

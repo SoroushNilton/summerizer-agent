@@ -1,6 +1,6 @@
-# ADK Short Bot
+# Summerizer Agent
 
-A Python-based agent that helps shorten messages using Google's Agent Development Kit (ADK) and Vertex AI.
+A Python-based agent that summerizes messages and returns old and new charachter count using Google's Agent Development Kit (ADK) and Vertex AI.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ A Python-based agent that helps shorten messages using Google's Agent Developmen
 1. Clone the repository:
 ```bash
 git clone https://github.com/SoroushNilton/summerizer-agent
-cd adk-short-bot
+cd summerizer-agent
 ```
 
 2. Install Poetry if you haven't already:
@@ -47,6 +47,8 @@ GOOGLE_CLOUD_STAGING_BUCKET=gs://your-bucket-name
 2. Set up Google Cloud authentication:
 ```bash
 gcloud auth login
+gcloud auth application-default login
+gcloud auth application-default set-quota-project my-quota-project
 gcloud config set project your-project-id
 ```
 
@@ -76,7 +78,7 @@ poetry run deploy-local --get_session --session_id=your-session-id
 
 4. Send a message to shorten:
 ```bash
-poetry run deploy-local --send --session_id=your-session-id --message="Shorten this message: Hello, how are you doing today?"
+poetry run deploy-local --send --session_id=your-session-id --message="The amazing thing about calligraphy—a once-lost art—is that it allows you to pause, reflect, and truly think about what you’re saying. Putting ink to paper is a beautiful experience we’ve largely forgotten."
 ```
 
 ### Remote Deployment
@@ -98,7 +100,7 @@ poetry run deploy-remote --list_sessions --resource_id=your-resource-id
 
 4. Send a message:
 ```bash
-poetry run deploy-remote --send --resource_id=your-resource-id --session_id=your-session-id --message="Hello, how are you doing today? So far, I've made breakfast today, walkted dogs, and went to work."
+poetry run deploy-remote --send --resource_id=your-resource-id --session_id=your-session-id --message="The amazing thing about calligraphy, a once-lost art, is that it allows you to pause, reflect, and truly think about what you’re saying. Putting ink to paper is a beautiful experience we’ve largely forgotten."
 ```
 
 5. Clean up (delete deployment):
@@ -109,8 +111,8 @@ poetry run deploy-remote --delete --resource_id=your-resource-id
 ## Project Structure
 
 ```
-adk-short-bot/
-├── adk_short_bot/          # Main package directory
+summerizer-agent/
+├── summerizer_agent/          # Main package directory
 │   ├── __init__.py
 │   ├── agent.py           # Agent implementation
 │   └── prompt.py          # Prompt templates
@@ -143,13 +145,9 @@ To add new features or modify existing ones:
    - Verify all required environment variables are set
    - Ensure you have the necessary permissions in your Google Cloud project
 
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+## Contributions
+Modified by Soroush Razavi based on work by Brandon Hancock
 
 ## License
 
-[Your chosen license]
+license = "Apache License 2.0" 
